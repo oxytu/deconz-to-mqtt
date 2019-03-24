@@ -22,7 +22,7 @@ def zhatemp_topic(websocket_message, rest_message):
 def zhatemp_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'temperature': failsafe(lambda : websocket_message['state']['temperature']),
+		'temperature': failsafe(lambda : websocket_message['state']['temperature'] / 100),
 		'battery': failsafe(lambda : websocket_message['config']['battery']),
 		}
 
@@ -36,7 +36,7 @@ def zhahumidity_topic(websocket_message, rest_message):
 def zhahumidity_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'humidity': failsafe(lambda : websocket_message['state']['humidity']),
+		'humidity': failsafe(lambda : websocket_message['state']['humidity'] / 100),
 		'battery': failsafe(lambda : websocket_message['config']['battery']),
 		}
 

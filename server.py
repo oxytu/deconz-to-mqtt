@@ -19,7 +19,6 @@ def mqtt_topic_function(websocket_message, rest_extended_data):
 	try:
 		if type in topic_generators:
 			fnct = topic_generators[type]
-			print(f"mqtt_topic_function for type {type}: {fnct}")
 			return cfg['mqtt']['topic_root'] + fnct(websocket_message, rest_extended_data)
 	except:
 		pass
@@ -28,12 +27,10 @@ def mqtt_topic_function(websocket_message, rest_extended_data):
 
 def mqtt_message_function(websocket_message, rest_extended_data):
 	type = rest_extended_data['type']
-	print(f"mqtt_message_function for type {type}")
 
 	try:
 		if type in message_generators:
 			fnct = message_generators[type]
-			print(f"mqtt_topic_function for type {type}: {fnct}")
 			return fnct(websocket_message, rest_extended_data)
 	except:
 		pass
