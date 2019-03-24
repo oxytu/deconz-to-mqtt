@@ -15,6 +15,22 @@ You need several libraries for the code to work:
 
 ```pip install aiohttp websockets hbmqtt```
 
+Clone this repository into ```/opt```:
+
+```
+cd /opt
+sudo git clone https://github.com/oxytu/deconz-to-mqtt/
+```
+
+Don't forget to copy and adopt the configuration file (see below)
+
+Copy ```deconz-to-mqtt.service``` to ```/lib/systemd/system/```. Then register the service on your system:
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable deconz-to-mqtt
+sudo systemctl start deconz-to-mqtt
+```
 
 # Configuration
 
