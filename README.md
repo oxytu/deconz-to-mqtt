@@ -9,6 +9,8 @@ topics and message content, if you dare to edit python source code (topics.py)
 
 # Installation
 
+You need Python 3.7.
+
 You need several libraries for the code to work:
 
 ```pip install aiohttp websockets hbmqtt```
