@@ -9,7 +9,7 @@ def zhapress_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
 		'pressure': websocket_message['state']['pressure'],
-		'battery': websocket_message['config']['battery'],
+		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
 		}
 
 
@@ -23,6 +23,7 @@ def zhatemp_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
 		'temperature': websocket_message['state']['temperature'],
+		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
 		}
 
 
@@ -35,8 +36,8 @@ def zhahumidity_topic(websocket_message, rest_message):
 def zhahumidity_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'temperature': websocket_message['state']['humidity'],
-		'battery': websocket_message['config']['battery'],
+		'humidity': websocket_message['state']['humidity'],
+		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
 		}
 
 
