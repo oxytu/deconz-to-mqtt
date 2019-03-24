@@ -15,9 +15,12 @@ with open("config.yml", 'r') as ymlfile:
 
 def mqtt_topic_function(websocket_message, rest_extended_data):
 	type = rest_extended_data['type']
+	
 	try:
 		if type in topic_generators:
-			return cfg['mqtt']['topic_root'] + topic_generators[type](websocket_message, rest_extended_data)
+			fnct = topic_generators[type]
+			print(f"mqtt_topic_function for type {type}: {fnct}")
+			return cfg['mqtt']['topic_root'] + fnct(websocket_message, rest_extended_data)
 	except:
 		pass
 	
@@ -25,9 +28,13 @@ def mqtt_topic_function(websocket_message, rest_extended_data):
 
 def mqtt_message_function(websocket_message, rest_extended_data):
 	type = rest_extended_data['type']
+	print(f"mqtt_message_function for type {type}")
+
 	try:
 		if type in message_generators:
-			return message_generators[type](websocket_message, rest_extended_data)
+			fnct = message_generators[type]
+			print(f"mqtt_topic_function for type {type}: {fnct}")
+			return fnct(websocket_message, rest_extended_data)
 	except:
 		pass
 	
@@ -53,6 +60,7 @@ async def extend_websocket_data(websocket_json):
 				response = await rest_fetch(session, cfg['deconz']['rest_url'] + handlers[websocket_json['r']])
 				return json.loads(response)
 		except:
+			print(f"No extended REST data available for {websocket_json['r']}")
 			pass
 		
 		return {}

@@ -1,4 +1,4 @@
-from server_lib import topic_generator, message_generator
+from server_lib import topic_generator, message_generator, failsafe
 
 @topic_generator('ZHAPressure')
 def zhapress_topic(websocket_message, rest_message):
@@ -8,8 +8,8 @@ def zhapress_topic(websocket_message, rest_message):
 def zhapress_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'pressure': websocket_message['state']['pressure'],
-		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
+		'pressure': failsafe(lambda : websocket_message['state']['pressure']),
+		'battery': failsafe(lambda : websocket_message['config']['battery']),
 		}
 
 
@@ -22,8 +22,8 @@ def zhatemp_topic(websocket_message, rest_message):
 def zhatemp_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'temperature': websocket_message['state']['temperature'],
-		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
+		'temperature': failsafe(lambda : websocket_message['state']['temperature']),
+		'battery': failsafe(lambda : websocket_message['config']['battery']),
 		}
 
 
@@ -36,8 +36,8 @@ def zhahumidity_topic(websocket_message, rest_message):
 def zhahumidity_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'humidity': websocket_message['state']['humidity'],
-		'battery': websocket_message['config']['battery'] if websocket_message['config']['battery'] is not None else None,
+		'humidity': failsafe(lambda : websocket_message['state']['humidity']),
+		'battery': failsafe(lambda : websocket_message['config']['battery']),
 		}
 
 
@@ -51,7 +51,9 @@ def zhaopenclose_topic(websocket_message, rest_message):
 def zhaopenclose_message(websocket_message, rest_message):
 	return {
 		'event': websocket_message['e'],
-		'state': 'open' if websocket_message['state']['open'] else 'closed',
+		'state': failsafe(lambda : 'open' if websocket_message['state']['open'] else 'closed'),
+		'battery': failsafe(lambda : websocket_message['config']['battery']),
+		'temperature': failsafe(lambda : websocket_message['config']['temperature']),
 		}
 
 
@@ -70,5 +72,7 @@ def zhaswitch_message(websocket_message, rest_message):
 	}
 	return {
 		'event': websocket_message['e'],
-		'button': button_map[websocket_message['state']['buttonevent']],
+		'button': failsafe(lambda : button_map[websocket_message['state']['buttonevent']]),
+		'battery': failsafe(lambda : websocket_message['config']['battery']),
+		'temperature': failsafe(lambda : websocket_message['config']['temperature']),
 		}

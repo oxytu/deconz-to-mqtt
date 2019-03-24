@@ -16,3 +16,10 @@ def message_generator(type):
 		message_generators[type] = fn
 		return fn
 	return decorator
+
+def failsafe(fnc):
+	try:
+		return fnc()
+	except:
+		pass
+	return None
