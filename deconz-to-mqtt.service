@@ -1,0 +1,11 @@
+[Unit]
+Description=DeCONZ to MQTT Service
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/opt/deconz-to-mqtt/
+ExecStart=/usr/bin/python3.7 /opt/deconz-to-mqtt/server.py
+
+[Install]
+WantedBy=multi-user.target
