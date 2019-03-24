@@ -15,17 +15,23 @@ with open("config.yml", 'r') as ymlfile:
 
 def mqtt_topic_function(websocket_message, rest_extended_data):
 	type = rest_extended_data['type']
-	if type in topic_generators:
-		return cfg['mqtt']['topic_root'] + topic_generators[type](websocket_message, rest_extended_data)
-	else:
-		return cfg['mqtt']['topic_root'] + '/'.join(filter(None, [websocket_message['r'], rest_extended_data['type'], rest_extended_data['name']]))
+	try:
+		if type in topic_generators:
+			return cfg['mqtt']['topic_root'] + topic_generators[type](websocket_message, rest_extended_data)
+	except:
+		pass
+	
+	return cfg['mqtt']['topic_root'] + '/'.join(filter(None, [websocket_message['r'], rest_extended_data['type'], rest_extended_data['name']]))
 
 def mqtt_message_function(websocket_message, rest_extended_data):
 	type = rest_extended_data['type']
-	if type in message_generators:
-		return message_generators[type](websocket_message, rest_extended_data)
-	else:
-		return websocket_message
+	try:
+		if type in message_generators:
+			return message_generators[type](websocket_message, rest_extended_data)
+	except:
+		pass
+	
+	return websocket_message
 
 @asyncio.coroutine
 async def rest_fetch(session, url):
