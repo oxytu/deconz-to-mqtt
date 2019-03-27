@@ -63,28 +63,38 @@ async def extend_websocket_data(websocket_json):
 		return {}
 
 @asyncio.coroutine
+async def send_mqtt(topic, message):
+	mqttc = aiomqtt.Client(asyncio.get_event_loop(), "deconz-to-mqtt")
+	await mqttc.connect(cfg['mqtt']['host'], cfg['mqtt']['port'], cfg['mqtt']['timeout'])
+
+	mqttc.publish(topic, json.dumps(message).encode("UTF-8"))
+
+	mqttc.disconnect()
+
+@asyncio.coroutine
+async def websocket_message_loop(websocket):
+	async for message in websocket:
+		print(f"<<deconz<< {message}")
+		message_json = json.loads(message)
+
+		rest_extended_data = await extend_websocket_data(message_json)
+
+		topic = mqtt_topic_function(message_json, rest_extended_data)
+		message = mqtt_message_function(message_json, rest_extended_data)
+
+		print(f">>mqtt>> topic: {topic}: {message}")
+		await send_mqtt(topic, message)
+
+@asyncio.coroutine
 async def receive_deconz_messages():
-	async with websockets.connect(cfg['deconz']['websocket_url']) as websocket:
+	while True:
+		try:
+			async with websockets.connect(cfg['deconz']['websocket_url']) as websocket:
+				await websocket_message_loop(websocket)
+				
+		except:
+			pass
 
-		async for message in websocket:
-			mqttc = aiomqtt.Client(asyncio.get_event_loop(), "deconz-to-mqtt")
-
-			await mqttc.connect(cfg['mqtt']['host'], cfg['mqtt']['port'], cfg['mqtt']['timeout'])
-
-			print(f"<<deconz<< {message}")
-			message_json = json.loads(message)
-
-			rest_extended_data = await extend_websocket_data(message_json)
-
-			topic = mqtt_topic_function(message_json, rest_extended_data)
-			message = mqtt_message_function(message_json, rest_extended_data)
-
-			print(f">>mqtt>> topic: {topic}: {message}")
-
-			mqttc.publish(topic,
-					json.dumps(message).encode("UTF-8"))
-
-			mqttc.disconnect()
 
 
 asyncio.get_event_loop().run_until_complete(receive_deconz_messages())
