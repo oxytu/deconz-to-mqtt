@@ -4,4 +4,4 @@ deconz:
 
 mqtt:
   url: mqtt://openhabianpi/
-  topic_root: /deconz/
+  topic_root: deconz/
