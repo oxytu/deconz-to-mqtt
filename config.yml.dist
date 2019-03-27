@@ -3,5 +3,7 @@ deconz:
   rest_url: http://openhabianpi/api/<your-api-key-here>
 
 mqtt:
-  url: mqtt://openhabianpi/
+  host: openhabianpi
+  port: 1883
+  timeout: 60
   topic_root: deconz/

@@ -13,7 +13,7 @@ You need Python 3.7.
 
 You need several libraries for the code to work:
 
-```pip install aiohttp websockets hbmqtt```
+```pip install aiohttp websockets aiomqtt```
 
 Clone this repository into ```/opt```:
 

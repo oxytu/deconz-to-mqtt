@@ -5,7 +5,7 @@ import aiohttp
 import websockets
 import json
 import yaml
-from hbmqtt.client import MQTTClient, ClientException
+import aiomqtt
 
 from server_lib import topic_generators, message_generators
 import topics
@@ -67,8 +67,9 @@ async def receive_deconz_messages():
 	async with websockets.connect(cfg['deconz']['websocket_url']) as websocket:
 
 		async for message in websocket:
-			mqttc = MQTTClient()
-			await mqttc.connect(cfg['mqtt']['url'])
+			mqttc = aiomqtt.Client(asyncio.get_event_loop(), "deconz-to-mqtt")
+
+			await mqttc.connect(cfg['mqtt']['host'], cfg['mqtt']['port'], cfg['mqtt']['timeout'])
 
 			print(f"<<deconz<< {message}")
 			message_json = json.loads(message)
@@ -80,8 +81,10 @@ async def receive_deconz_messages():
 
 			print(f">>mqtt>> topic: {topic}: {message}")
 
-			await mqttc.publish(topic,
+			mqttc.publish(topic,
 					json.dumps(message).encode("UTF-8"))
+
+			mqttc.disconnect()
 
 
 asyncio.get_event_loop().run_until_complete(receive_deconz_messages())
