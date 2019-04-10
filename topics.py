@@ -66,9 +66,11 @@ def zhaswitch_topic(websocket_message, rest_message):
 @message_generator('ZHASwitch')
 def zhaswitch_message(websocket_message, rest_message):
 	button_map = {
-		1002: 'left',
-		2002: 'right',
-		3002: 'both'
+		1002: 'button1',
+		2002: 'button2',
+		3002: 'button3',
+		4002: 'button4',
+		5002: 'button5',
 	}
 	return {
 		'event': websocket_message['e'],
