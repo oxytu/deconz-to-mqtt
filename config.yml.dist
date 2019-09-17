@@ -1,6 +1,6 @@
 deconz:
   websocket_url: ws://openhabianpi:443/
-  rest_url: http://openhabianpi/api/<your-api-key-here>
+  rest_url: http://openhabianpi/api/<your-api-key-here>/
 
 mqtt:
   host: openhabianpi
