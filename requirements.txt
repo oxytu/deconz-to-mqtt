@@ -1,0 +1,4 @@
+aiohttp
+websockets
+aiomqtt
+pyyaml

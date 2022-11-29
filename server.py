@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 import asyncio
 import aiohttp
@@ -6,6 +5,7 @@ import websockets
 import json
 import yaml
 import aiomqtt
+import os
 
 from server_lib import topic_generators, message_generators
 import topics
@@ -37,12 +37,10 @@ def mqtt_message_function(websocket_message, rest_extended_data):
 	
 	return websocket_message
 
-@asyncio.coroutine
 async def rest_fetch(session, url):
 	async with session.get(url) as response:
 		return await response.text()
 
-@asyncio.coroutine
 async def extend_websocket_data(websocket_json):
 	async with aiohttp.ClientSession() as session:
 
@@ -62,7 +60,6 @@ async def extend_websocket_data(websocket_json):
 		
 		return {}
 
-@asyncio.coroutine
 async def send_mqtt(topic, message):
 	mqttc = aiomqtt.Client(asyncio.get_event_loop(), "deconz-to-mqtt")
 	await mqttc.connect(cfg['mqtt']['host'], cfg['mqtt']['port'], cfg['mqtt']['timeout'])
@@ -71,7 +68,6 @@ async def send_mqtt(topic, message):
 
 	mqttc.disconnect()
 
-@asyncio.coroutine
 async def websocket_message_loop(websocket):
 	async for message in websocket:
 		print(f"<<deconz<< {message}")
@@ -85,8 +81,8 @@ async def websocket_message_loop(websocket):
 		print(f">>mqtt>> topic: {topic}: {message}")
 		await send_mqtt(topic, message)
 
-@asyncio.coroutine
 async def receive_deconz_messages():
+	print(f"Starting main event loop on websocket url {cfg['deconz']['websocket_url']}")
 	while True:
 		try:
 			async with websockets.connect(cfg['deconz']['websocket_url']) as websocket:
@@ -95,6 +91,10 @@ async def receive_deconz_messages():
 		except:
 			pass
 
-
-
-asyncio.get_event_loop().run_until_complete(receive_deconz_messages())
+if __name__ == "__main__":
+    print("About to start main event loop")
+    try:
+        asyncio.run(receive_deconz_messages())
+    except KeyboardInterrupt:
+        os._exit(0)
+    print("Finished event loop")
