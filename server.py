@@ -4,7 +4,7 @@ import aiohttp
 import websockets
 import json
 import yaml
-import aiomqtt
+import asyncio_mqtt as aiomqtt
 import os
 
 from server_lib import topic_generators, message_generators
@@ -61,12 +61,11 @@ async def extend_websocket_data(websocket_json):
 		return {}
 
 async def send_mqtt(topic, message):
-	mqttc = aiomqtt.Client(asyncio.get_event_loop(), "deconz-to-mqtt")
-	await mqttc.connect(cfg['mqtt']['host'], cfg['mqtt']['port'], cfg['mqtt']['timeout'])
-
-	mqttc.publish(topic, json.dumps(message).encode("UTF-8"))
-
-	mqttc.disconnect()
+	username = cfg['mqtt']['username'] if 'username' in cfg['mqtt'] else None
+	password = cfg['mqtt']['password'] if 'password' in cfg['mqtt'] else None
+	print(f"Connecting with username: {username} and password: {'*' * len(password)}")
+	async with aiomqtt.Client(hostname=cfg['mqtt']['host'], port=cfg['mqtt']['port'], username=username, password=password, client_id="deconz-to-mqtt") as mqttc:
+		await mqttc.publish(topic, json.dumps(message).encode("UTF-8"))
 
 async def websocket_message_loop(websocket):
 	async for message in websocket:
